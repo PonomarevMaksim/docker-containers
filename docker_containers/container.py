@@ -39,7 +39,7 @@ class DockerContainer:
 
     def with_exposed_ports(self, *ports) -> 'DockerContainer':
         for port in list(ports):
-            self.ports[port] = None
+            self.ports[port] = self.ports.get(port)
         return self
 
     def start(self):

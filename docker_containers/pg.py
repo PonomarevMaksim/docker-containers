@@ -1,6 +1,6 @@
-import asyncio
 import logging
-from typing import Optional, Callable, Coroutine
+from functools import partial
+from typing import Optional, Callable, Any
 
 from .container import DockerContainer
 from .utils import wait_is_ready, inside_container
@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 class PostgresContainer(DockerContainer):
 
     def __init__(self,
-                 check_connection_callback: Callable[[str], Coroutine],
+                 check_connection_callback: Callable[[str], Any],
                  user: str = 'user',
                  password: str = 'pass',
                  database: Optional[str] = None,
@@ -28,12 +28,7 @@ class PostgresContainer(DockerContainer):
         self.port_to_expose = port_to_expose
 
     def _connect(self):
-        def connect_db():
-            url = self.get_connection_url()
-            loop = asyncio.get_event_loop()
-            loop.run_until_complete(self.check_connection_callback(url))
-
-        wait_is_ready(connect_db)
+        wait_is_ready(partial(self.check_connection_callback, self.get_connection_url()))
 
     def start(self):
         self._configure()
