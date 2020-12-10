@@ -21,12 +21,10 @@ def get_packages(package):
 
 setup(
     name='docker_containers',
-    version='0.0.6',
+    version='0.0.7',
     url='https://github.com/PonomarevMaksim/docker-containers',
     python_requires=">=3.7",
     install_requires=[
-        'crayons    >=0.3.0, <1',
-        'blindspin  >=2.0.1, <3',
         'docker     >=4.2.0, <5',
     ],
     license="BSD",

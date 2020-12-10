@@ -1,6 +1,6 @@
 import logging
 from functools import partial
-from typing import Optional, Callable, Any
+from typing import Optional, Callable
 
 from .container import DockerContainer
 from .utils import wait_is_ready, inside_container
@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 class PostgresContainer(DockerContainer):
 
     def __init__(self,
-                 check_connection_callback: Callable[[str], Any],
+                 check_connection_callback: Callable[[str], bool],
                  user: str = 'user',
                  password: str = 'pass',
                  database: Optional[str] = None,

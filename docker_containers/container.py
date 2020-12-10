@@ -1,10 +1,11 @@
+from logging import getLogger
 from typing import Optional
 
-import blindspin
-import crayons
 from docker.client import DockerClient
 
 from .utils import inside_container
+
+logger = getLogger(__name__)
 
 __all__ = ('DockerContainer',)
 
@@ -43,24 +44,19 @@ class DockerContainer:
         return self
 
     def start(self):
-        print('')
-        print('{} {}'.format(crayons.yellow('Pulling image'),
-                             crayons.red(self.image)))
-        with blindspin.spinner():
-            docker_client = self.get_docker_client()
-            self._container = docker_client.containers.run(
-                self.image,
-                command=self._command,
-                detach=True,
-                environment=self.env,
-                ports=self.ports,
-                name=self._name,
-                volumes=self.volumes,
-                network=self.network,
-                links=self.links)
-        print('')
-        print('Container started: ',
-              crayons.yellow(self._container.short_id, bold=True))
+        logger.debug(f'Pulling image %s', self.image)
+        docker_client = self.get_docker_client()
+        self._container = docker_client.containers.run(
+            self.image,
+            command=self._command,
+            detach=True,
+            environment=self.env,
+            ports=self.ports,
+            name=self._name,
+            volumes=self.volumes,
+            network=self.network,
+            links=self.links)
+        logger.debug('Container started: %s', self._container.short_id)
         return self
 
     def stop(self, force=True, delete_volume=True):
