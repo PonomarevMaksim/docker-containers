@@ -11,16 +11,16 @@ logger = logging.getLogger(__name__)
 
 
 class PostgresContainer(DockerContainer):
-
     def __init__(self,
                  check_connection_callback: Callable[[str], bool],
-                 user: str = 'user',
-                 password: str = 'pass',
-                 database: Optional[str] = None,
-                 image: str = 'postgres:11-alpine',
-                 port_to_expose: int = 5432):
+                 user: str = 'postgresql',
+                 password: str = 'postgres',
+                 database: str = 'postgres',
+                 image: str = 'postgres:13',
+                 port_to_expose: int = 5432,
+                 client: DockerClient = DockerClient.from_env()):
 
-        super(PostgresContainer, self).__init__(image=image)
+        super().__init__(image=image, client=client)
         self.check_connection_callback = check_connection_callback
         self.user = user
         self.password = password

@@ -44,7 +44,7 @@ class DockerContainer:
         return self
 
     def start(self):
-        logger.debug(f'Pulling image %s', self.image)
+        logger.debug('Pulling image %s', self.image)
         docker_client = self.get_docker_client()
         self._container = docker_client.containers.run(
             self.image,
@@ -102,12 +102,16 @@ class DockerContainer:
         if self._container is not None:
             self._container.reload()
 
+    @property
+    def container_ports(self):
+        if self._container is not None:
+            return self._container.ports
+        return None
+
     def get_container_host_ip(self, port) -> str:
         if inside_container():
-            ports = self._container.ports
-            return ports[f'{port}/tcp'][0]['HostIp']
-        else:
-            return '0.0.0.0'
+            return self.container_ports[f'{port}/tcp'][0]['HostIp']
+        return '0.0.0.0'
 
     def get_host_ip(self) -> Optional[str]:
         if self._container is None:
@@ -118,9 +122,14 @@ class DockerContainer:
     def get_exposed_port(self, port) -> str:
         if inside_container():
             return port
+        for _ in range(5):
+            if self.container_ports[f'{port}/tcp']:
+                break
+            self.reload()
+            sleep(1)
         else:
-            ports = self._container.ports
-            return ports[f'{port}/tcp'][0]['HostPort']
+            raise TimeoutError(f'Port {port} is not exposed')
+        return self.container_ports[f'{port}/tcp'][0]['HostPort']
 
     def with_command(self, command: str) -> 'DockerContainer':
         self._command = command
