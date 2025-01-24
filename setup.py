@@ -21,11 +21,11 @@ def get_packages(package):
 
 setup(
     name='docker_containers',
-    version='0.0.7',
+    version='0.0.8',
     url='https://github.com/PonomarevMaksim/docker-containers',
     python_requires=">=3.7",
     install_requires=[
-        'docker     >=4.2.0, <5',
+        'docker     >=7.1',
     ],
     license="BSD",
     description="Util for start containers",
