@@ -102,15 +102,14 @@ class DockerContainer:
         if self._container is not None:
             self._container.reload()
 
-    @property
-    def container_ports(self):
+    def get_container_port(self, port) -> dict:
         if self._container is not None:
-            return self._container.ports
-        return None
+            if ports := self._container.ports[f'{port}/tcp']:
+                return ports[0]
 
     def get_container_host_ip(self, port) -> str:
         if inside_container():
-            return self.container_ports[f'{port}/tcp'][0]['HostIp']
+            return self.get_container_port(port)['HostIp']
         return '0.0.0.0'
 
     def get_host_ip(self) -> Optional[str]:
@@ -123,13 +122,12 @@ class DockerContainer:
         if inside_container():
             return port
         for _ in range(5):
-            if self.container_ports[f'{port}/tcp']:
-                break
+            if container_port := self.get_container_port(port):
+                return container_port['HostPort']
             self.reload()
             sleep(1)
         else:
             raise TimeoutError(f'Port {port} is not exposed')
-        return self.container_ports[f'{port}/tcp'][0]['HostPort']
 
     def with_command(self, command: str) -> 'DockerContainer':
         self._command = command
