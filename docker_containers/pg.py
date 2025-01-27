@@ -1,6 +1,8 @@
 import logging
 from functools import partial
-from typing import Optional, Callable
+from typing import Callable
+
+from docker import DockerClient
 
 from .container import DockerContainer
 from .utils import wait_is_ready, inside_container
