@@ -21,7 +21,7 @@ def get_packages(package):
 
 setup(
     name='docker_containers',
-    version='0.0.9',
+    version='0.0.10',
     url='https://github.com/PonomarevMaksim/docker-containers',
     python_requires=">=3.7",
     install_requires=[

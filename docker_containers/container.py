@@ -1,4 +1,5 @@
 from logging import getLogger
+from time import sleep
 from typing import Optional
 
 from docker.client import DockerClient
